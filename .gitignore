@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+.thumbnail
+
+# Editor / OS junk
+Thumbs.db
+*.swp
+
+# Dependencies (none currently, but safe to keep)
+node_modules/

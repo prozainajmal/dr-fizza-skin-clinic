@@ -1,0 +1,120 @@
+{
+  "plugins": [
+    "react",
+    "import"
+  ],
+  "rules": {
+    "react/forbid-elements": [
+      "warn",
+      {
+        "forbid": []
+      }
+    ],
+    "no-restricted-imports": [
+      "warn",
+      {
+        "patterns": [
+          {
+            "group": [
+              "screens/**"
+            ],
+            "message": "Import design-system components from 'index.js', not component internals."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "warn",
+      {
+        "selector": "Literal[value=/#[0-9a-fA-F]{3,8}\\b/]",
+        "message": "Raw hex color — use a design-system color token via var()."
+      },
+      {
+        "selector": "Literal[value=/\\b\\d+px\\b/]",
+        "message": "Raw px value — use a design-system spacing token via var()."
+      },
+      {
+        "selector": "Literal[value=/font-family\\s*:\\s*(?!['\\\"]?(?:IBM Plex Sans|Cormorant Garamond|DM Sans))/i]",
+        "message": "Font not provided by the design system. Available: IBM Plex Sans, Cormorant Garamond, DM Sans."
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/index.js"
+      ],
+      "rules": {
+        "no-restricted-imports": "off"
+      }
+    }
+  ],
+  "x-omelette": {
+    "components": {},
+    "tokens": [
+      "--cream",
+      "--cream-2",
+      "--ease",
+      "--gold",
+      "--gold-tint",
+      "--ink",
+      "--ink-faint",
+      "--ink-soft",
+      "--line",
+      "--line-2",
+      "--r",
+      "--r-lg",
+      "--r-pill",
+      "--r-sm",
+      "--r-xl",
+      "--rose",
+      "--rose-deep",
+      "--rose-deeper",
+      "--rose-tint",
+      "--sage",
+      "--sage-tint",
+      "--sans",
+      "--serif",
+      "--sh-lg",
+      "--sh-md",
+      "--sh-rose",
+      "--sh-sm",
+      "--white"
+    ],
+    "tokenKinds": {
+      "--cream": "color",
+      "--cream-2": "color",
+      "--white": "color",
+      "--ink": "color",
+      "--ink-soft": "color",
+      "--ink-faint": "color",
+      "--rose": "color",
+      "--rose-tint": "color",
+      "--rose-deep": "color",
+      "--rose-deeper": "color",
+      "--sage": "color",
+      "--sage-tint": "color",
+      "--gold": "color",
+      "--gold-tint": "color",
+      "--line": "color",
+      "--line-2": "color",
+      "--sh-sm": "shadow",
+      "--sh-md": "shadow",
+      "--sh-lg": "shadow",
+      "--sh-rose": "shadow",
+      "--r-sm": "spacing",
+      "--r": "spacing",
+      "--r-lg": "spacing",
+      "--r-xl": "spacing",
+      "--r-pill": "spacing",
+      "--serif": "font",
+      "--sans": "font",
+      "--ease": "other"
+    },
+    "fontFamilies": [
+      "Cormorant Garamond",
+      "DM Sans",
+      "IBM Plex Sans"
+    ]
+  }
+}
