@@ -4,7 +4,7 @@ function VisitDetails({ go, booking, setBooking, user }) {
   const [allergies, setAllergies] = React.useState("");
   const [meds, setMeds] = React.useState("");
   const [history, setHistory] = React.useState("");
-  const [files, setFiles] = React.useState([{ name: "lab-report-march.pdf", size: "248 KB" }]);
+  const [files, setFiles] = React.useState([]);
   const firstTime = !user || user.firstTime || user.guest;
 
   const concerns = ["Acne", "Pigmentation", "Anti-aging", "Laser", "Hair loss", "General check-up"];

@@ -1,6 +1,7 @@
 /* Patient dashboard */
 function Dashboard({ go, booking, user }) {
-  const name = user && user.name && user.name !== "Guest" ? user.name : "Ayesha Khan";
+  const hasName = Boolean(user && user.name && user.name !== "Guest");
+  const firstName = hasName ? user.name.split(" ")[0] : null;
 
   const past = [
     { date: "Mar 14, 2026", clinic: "Lahore — Gulberg III", doc: "Dr. Fizza Ahmed", type: "Laser — pigmentation" },
@@ -18,7 +19,7 @@ function Dashboard({ go, booking, user }) {
       <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-end", marginBottom: 38, flexWrap: "wrap", gap: 16 }}>
         <div>
           <span className="eyebrow">Patient portal</span>
-          <h1 className="display" style={{ fontSize: 42, margin: "8px 0 0" }}>Welcome back, {name.split(" ")[0]}</h1>
+          <h1 className="display" style={{ fontSize: 42, margin: "8px 0 0" }}>{firstName ? `Welcome back, ${firstName}` : "Welcome back"}</h1>
         </div>
       </div>
 

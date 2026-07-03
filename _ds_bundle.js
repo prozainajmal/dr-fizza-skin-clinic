@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":3,"namespace":"DrFizzaSkinClinicBookingPortal_ea3cd1","components":[],"sourceHashes":{"screens/admin.jsx":"13667842a5e5","screens/app.jsx":"ac6bc425916b","screens/auth.jsx":"fb79d8a41fdb","screens/calendar.jsx":"a33e98b27400","screens/chatbot.jsx":"a52e0398e1a2","screens/dashboard.jsx":"1f2715d83bb2","screens/details.jsx":"788b85f57443","screens/landing.jsx":"3d5d62efd039","screens/location.jsx":"5ca5ccdeb160","screens/login.jsx":"108dfd3238a0","screens/payment.jsx":"938193df124f","screens/profile.jsx":"10a71ae59615","screens/ui.jsx":"2feab7dcf39c"},"inlinedExternals":[],"unexposedExports":[]} */
+/* @ds-bundle: {"format":4,"namespace":"DrFizzaSkinClinicBookingPortal_ea3cd1","components":[],"sourceHashes":{"screens/admin.jsx":"8ee4d2a16eeb","screens/app.jsx":"18fab0e47bc4","screens/auth.jsx":"fb79d8a41fdb","screens/calendar.jsx":"a33e98b27400","screens/chatbot.jsx":"a52e0398e1a2","screens/dashboard.jsx":"be2c3bba856a","screens/details.jsx":"f6f88e06f0d4","screens/landing.jsx":"3d5d62efd039","screens/location.jsx":"5ca5ccdeb160","screens/login.jsx":"e9e19bc0c75f","screens/payment.jsx":"938193df124f","screens/profile.jsx":"10a71ae59615","screens/treatments.jsx":"e9e654c3ffda","screens/ui.jsx":"61348e0ff126"},"inlinedExternals":[],"unexposedExports":[]} */
 
 (() => {
 
@@ -101,6 +101,234 @@ function StatusBadge({
     className: "badge",
     style: STATUS_STYLE[s] || STATUS_STYLE.Open
   }, s);
+}
+
+/* ---------------- Message modal ---------------- */
+function MessageModal({
+  patient,
+  onClose,
+  notify
+}) {
+  const [text, setText] = React.useState("");
+  if (!patient) return null;
+  const send = () => {
+    notify("Message sent to " + patient.name);
+    setText("");
+    onClose();
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    onClick: onClose,
+    style: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 210,
+      background: "rgba(42,28,28,.5)",
+      display: "grid",
+      placeItems: "center",
+      padding: 20,
+      animation: "fade .2s ease both"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    onClick: e => e.stopPropagation(),
+    style: {
+      background: "var(--white)",
+      borderRadius: "var(--r-lg)",
+      boxShadow: "0 30px 70px rgba(42,28,28,.35)",
+      width: "100%",
+      maxWidth: 460,
+      animation: "pop .25s var(--ease) both"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row",
+    style: {
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      padding: "22px 24px 16px",
+      borderBottom: "1px solid var(--line)"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "row",
+    style: {
+      gap: 12,
+      alignItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 40,
+      height: 40,
+      borderRadius: "50%",
+      background: "var(--rose-deep)",
+      color: "#fff",
+      display: "grid",
+      placeItems: "center",
+      fontWeight: 700
+    }
+  }, patient.name[0]), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      fontSize: 15
+    }
+  }, patient.name), /*#__PURE__*/React.createElement("div", {
+    className: "faint",
+    style: {
+      fontSize: 12.5
+    }
+  }, "New message"))), /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn",
+    "aria-label": "Close",
+    onClick: onClose
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "x",
+    size: 16
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      padding: "18px 24px 24px"
+    }
+  }, /*#__PURE__*/React.createElement("textarea", {
+    className: "textarea",
+    style: {
+      minHeight: 110
+    },
+    placeholder: `Write a message to ${patient.name}…`,
+    value: text,
+    onChange: e => setText(e.target.value),
+    autoFocus: true
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "row",
+    style: {
+      justifyContent: "flex-end",
+      gap: 10,
+      marginTop: 14
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-quiet",
+    onClick: onClose
+  }, "Cancel"), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary",
+    disabled: !text.trim(),
+    onClick: send
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "send",
+    size: 15
+  }), " Send")))));
+}
+
+/* ---------------- Notifications dropdown ---------------- */
+const SAMPLE_NOTIFS = [{
+  ic: "calendar-plus",
+  t: "New booking",
+  d: "Zoya Ahmed booked a laser follow-up for 10:30 AM.",
+  time: "12m ago"
+}, {
+  ic: "file-badge",
+  t: "Report uploaded",
+  d: "Ayesha Khan uploaded lab-report-march.pdf for review.",
+  time: "1h ago"
+}, {
+  ic: "calendar-x",
+  t: "Reschedule request",
+  d: "Emaan Raza asked to move her video consult.",
+  time: "3h ago"
+}];
+function NotifBell() {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    if (!open) return;
+    const h = e => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  return /*#__PURE__*/React.createElement("div", {
+    ref: ref,
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "icon-btn",
+    "aria-label": "Notifications",
+    onClick: () => setOpen(o => !o),
+    style: {
+      position: "relative"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "bell",
+    size: 17
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      position: "absolute",
+      top: 5,
+      right: 6,
+      width: 7,
+      height: 7,
+      borderRadius: "50%",
+      background: "var(--rose-deep)"
+    }
+  })), open && /*#__PURE__*/React.createElement("div", {
+    className: "nav-menu",
+    style: {
+      width: 320,
+      right: 0
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "nav-menu-head"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 700,
+      fontSize: 14
+    }
+  }, "Notifications"), /*#__PURE__*/React.createElement("div", {
+    className: "faint",
+    style: {
+      fontSize: 12.5
+    }
+  }, SAMPLE_NOTIFS.length, " recent updates")), SAMPLE_NOTIFS.map((n, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "row",
+    style: {
+      gap: 11,
+      alignItems: "flex-start",
+      padding: "10px 12px",
+      borderRadius: 9
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 32,
+      height: 32,
+      borderRadius: 9,
+      background: "var(--rose-tint)",
+      color: "var(--rose-deep)",
+      display: "grid",
+      placeItems: "center",
+      flex: "none"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: n.ic,
+    size: 15
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontWeight: 600,
+      fontSize: 13.5
+    }
+  }, n.t), /*#__PURE__*/React.createElement("div", {
+    className: "faint",
+    style: {
+      fontSize: 12.5,
+      lineHeight: 1.4,
+      margin: "2px 0"
+    }
+  }, n.d), /*#__PURE__*/React.createElement("div", {
+    className: "faint",
+    style: {
+      fontSize: 11
+    }
+  }, n.time))))));
 }
 
 /* ---------------- Overview ---------------- */
@@ -711,6 +939,7 @@ function AdminPatients({
   const [sel, setSel] = React.useState(patients[0]);
   const [verified, setVerified] = React.useState({});
   const [query, setQuery] = React.useState("");
+  const [messaging, setMessaging] = React.useState(null);
   const isV = p => verified[p.id] ?? p.verified;
   const shown = patients.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
   return /*#__PURE__*/React.createElement("div", {
@@ -878,7 +1107,7 @@ function AdminPatients({
     }
   }, sel.visits, " lifetime visit", sel.visits > 1 ? "s" : "", " \xB7 Patient ID #", 1000 + sel.id)), /*#__PURE__*/React.createElement("button", {
     className: "btn btn-ghost btn-sm",
-    onClick: () => notify("Message sent to " + sel.name)
+    onClick: () => setMessaging(sel)
   }, /*#__PURE__*/React.createElement(Icon, {
     name: "message-circle",
     size: 15
@@ -983,7 +1212,11 @@ function AdminPatients({
   }), " Report verified") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(Icon, {
     name: "shield-check",
     size: 16
-  }), " Verify report"))))));
+  }), " Verify report"))))), /*#__PURE__*/React.createElement(MessageModal, {
+    patient: messaging,
+    onClose: () => setMessaging(null),
+    notify: notify
+  }));
 }
 
 /* ---------------- Shell ---------------- */
@@ -1054,8 +1287,26 @@ function AdminPanel({
   }, n.n))), /*#__PURE__*/React.createElement("div", {
     className: "aside-foot"
   }, /*#__PURE__*/React.createElement("span", {
-    className: "av"
-  }, "F"), /*#__PURE__*/React.createElement("div", {
+    className: "av",
+    style: {
+      padding: 0,
+      overflow: "hidden"
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: "assets/dr-fizza.jpg",
+    alt: "Dr. Fizza Ahmed",
+    style: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      display: "block",
+      borderRadius: "50%"
+    },
+    onError: e => {
+      e.currentTarget.style.display = "none";
+      e.currentTarget.parentElement.textContent = "F";
+    }
+  })), /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1
     }
@@ -1104,14 +1355,7 @@ function AdminPanel({
       gap: 10,
       alignItems: "center"
     }
-  }, /*#__PURE__*/React.createElement("button", {
-    className: "icon-btn",
-    "aria-label": "Notifications",
-    onClick: () => notify("No new notifications")
-  }, /*#__PURE__*/React.createElement(Icon, {
-    name: "bell",
-    size: 17
-  })))), section === "overview" && /*#__PURE__*/React.createElement(AdminOverview, {
+  }, /*#__PURE__*/React.createElement(NotifBell, null))), section === "overview" && /*#__PURE__*/React.createElement(AdminOverview, {
     appts: appts,
     setSection: setSection,
     verifyCount: verifyCount
@@ -1190,7 +1434,9 @@ function App() {
   });
   const [user, setUser] = React.useState(null);
   const [toast, setToast] = React.useState("");
-  const go = s => {
+  const [loginRole, setLoginRole] = React.useState("patient");
+  const go = (s, opts) => {
+    if (opts && opts.role) setLoginRole(opts.role);
     setScreen(s);
     window.scrollTo({
       top: 0,
@@ -1221,7 +1467,7 @@ function App() {
     setUser
   };
   const notify = m => setToast(m);
-  const showFooter = ["landing", "location", "dashboard", "profile"].includes(screen);
+  const showFooter = ["landing", "location", "dashboard", "profile", "treatments"].includes(screen);
   const showNav = !["auth", "confirmation", "admin", "login"].includes(screen);
   const showAssistant = !["admin", "login"].includes(screen);
   const logout = () => {
@@ -1233,6 +1479,9 @@ function App() {
   switch (screen) {
     case "landing":
       body = /*#__PURE__*/React.createElement(Landing, props);
+      break;
+    case "treatments":
+      body = /*#__PURE__*/React.createElement(Treatments, props);
       break;
     case "location":
       body = /*#__PURE__*/React.createElement(LocationSelector, props);
@@ -1262,9 +1511,11 @@ function App() {
       break;
     case "login":
       body = /*#__PURE__*/React.createElement(LoginPage, {
+        key: loginRole,
         go: go,
         setUser: setUser,
-        notify: notify
+        notify: notify,
+        initialRole: loginRole
       });
       break;
     case "admin":
@@ -2094,7 +2345,8 @@ function Dashboard({
   booking,
   user
 }) {
-  const name = user && user.name && user.name !== "Guest" ? user.name : "Ayesha Khan";
+  const hasName = Boolean(user && user.name && user.name !== "Guest");
+  const firstName = hasName ? user.name.split(" ")[0] : null;
   const past = [{
     date: "Mar 14, 2026",
     clinic: "Lahore — Gulberg III",
@@ -2138,7 +2390,7 @@ function Dashboard({
       fontSize: 42,
       margin: "8px 0 0"
     }
-  }, "Welcome back, ", name.split(" ")[0]))), /*#__PURE__*/React.createElement("div", {
+  }, firstName ? `Welcome back, ${firstName}` : "Welcome back"))), /*#__PURE__*/React.createElement("div", {
     className: "grid dash-grid",
     style: {
       gridTemplateColumns: "1.4fr 1fr",
@@ -2372,10 +2624,7 @@ function VisitDetails({
   const [allergies, setAllergies] = React.useState("");
   const [meds, setMeds] = React.useState("");
   const [history, setHistory] = React.useState("");
-  const [files, setFiles] = React.useState([{
-    name: "lab-report-march.pdf",
-    size: "248 KB"
-  }]);
+  const [files, setFiles] = React.useState([]);
   const firstTime = !user || user.firstTime || user.guest;
   const concerns = ["Acne", "Pigmentation", "Anti-aging", "Laser", "Hair loss", "General check-up"];
   const [picked, setPicked] = React.useState([]);
@@ -3247,9 +3496,10 @@ try { (() => {
 function LoginPage({
   go,
   setUser,
-  notify
+  notify,
+  initialRole
 }) {
-  const [role, setRole] = React.useState("patient"); // 'patient' | 'staff'
+  const [role, setRole] = React.useState(initialRole === "staff" ? "staff" : "patient"); // 'patient' | 'staff'
   const [mode, setMode] = React.useState("login"); // 'login' | 'register' (patient only)
   const [email, setEmail] = React.useState("");
   const [pw, setPw] = React.useState("");
@@ -4421,6 +4671,145 @@ Object.assign(window, {
 });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "screens/profile.jsx", error: String((e && e.message) || e) }); }
 
+// screens/treatments.jsx
+try { (() => {
+/* Treatments — dedicated page, distinct from the homepage */
+function Treatments({
+  go
+}) {
+  const groups = [{
+    icon: "sparkles",
+    t: "Acne & Scarring",
+    d: "Medical-grade peels, extractions and laser resurfacing to clear active breakouts and soften scarring."
+  }, {
+    icon: "zap",
+    t: "Laser Hair Removal",
+    d: "Diode and Nd:YAG laser sessions calibrated for all skin tones, with a plan sized to your area and coverage."
+  }, {
+    icon: "sun",
+    t: "Pigmentation & Brightening",
+    d: "Targeted treatment for melasma, sun damage and uneven tone using lasers, peels and topical protocols."
+  }, {
+    icon: "syringe",
+    t: "Anti-Aging & Fillers",
+    d: "Botox, dermal fillers and skin-boosters administered by board-certified physicians for natural results."
+  }, {
+    icon: "droplets",
+    t: "Chemical Peels",
+    d: "Layered peel protocols — from light refresh to deeper resurfacing — matched to your skin's tolerance."
+  }, {
+    icon: "gem",
+    t: "Bridal & Pre-Event",
+    d: "Multi-session prep plans that bring skin to its best for a wedding or major event, planned months ahead."
+  }];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "screen wrap",
+    style: {
+      padding: "56px 28px 80px"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      marginBottom: 48
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "pill-tag"
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: "stethoscope",
+    size: 14
+  }), " Treatments"), /*#__PURE__*/React.createElement("h1", {
+    className: "display",
+    style: {
+      fontSize: 52,
+      lineHeight: 1.15,
+      margin: "20px 0 0"
+    }
+  }, "Care built around your skin."), /*#__PURE__*/React.createElement("p", {
+    className: "muted",
+    style: {
+      fontSize: 17,
+      lineHeight: 1.6,
+      marginTop: 22,
+      maxWidth: 560
+    }
+  }, "Every treatment starts with a consultation \u2014 our specialists confirm the right protocol, timeline and cost before anything is scheduled.")), /*#__PURE__*/React.createElement("div", {
+    className: "grid cols-3",
+    style: {
+      gridTemplateColumns: "repeat(3,1fr)",
+      gap: 22
+    }
+  }, groups.map((g, i) => /*#__PURE__*/React.createElement("div", {
+    key: g.t,
+    className: "card card-pad",
+    style: {
+      animation: `riseUp ${.4 + i * .06}s var(--ease) both`
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 50,
+      height: 50,
+      borderRadius: 14,
+      background: "var(--rose-tint)",
+      color: "var(--rose-deep)",
+      display: "grid",
+      placeItems: "center"
+    }
+  }, /*#__PURE__*/React.createElement(Icon, {
+    name: g.icon,
+    size: 24
+  })), /*#__PURE__*/React.createElement("h3", {
+    className: "serif",
+    style: {
+      fontSize: 22,
+      fontWeight: 600,
+      lineHeight: 1.3,
+      margin: "18px 0 12px"
+    }
+  }, g.t), /*#__PURE__*/React.createElement("p", {
+    className: "muted",
+    style: {
+      fontSize: 14.5,
+      lineHeight: 1.55,
+      margin: 0
+    }
+  }, g.d)))), /*#__PURE__*/React.createElement("div", {
+    className: "card",
+    style: {
+      marginTop: 40,
+      padding: "34px 38px",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      flexWrap: "wrap",
+      gap: 20,
+      background: "linear-gradient(160deg,var(--rose-tint),var(--cream-2))",
+      border: "none"
+    }
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", {
+    className: "display",
+    style: {
+      fontSize: 30,
+      margin: 0
+    }
+  }, "Not sure which treatment is right?"), /*#__PURE__*/React.createElement("p", {
+    className: "muted",
+    style: {
+      fontSize: 15,
+      marginTop: 8,
+      maxWidth: 440
+    }
+  }, "Book a consultation and a specialist will recommend a plan for you.")), /*#__PURE__*/React.createElement("button", {
+    className: "btn btn-primary btn-lg",
+    onClick: () => go("location")
+  }, "Book a consultation ", /*#__PURE__*/React.createElement(Icon, {
+    name: "arrow-right",
+    size: 18
+  }))));
+}
+Object.assign(window, {
+  Treatments
+});
+})(); } catch (e) { __ds_ns.__errors.push({ path: "screens/treatments.jsx", error: String((e && e.message) || e) }); }
+
 // screens/ui.jsx
 try { (() => {
 /* Shared UI primitives — Dr. Fizza Skin Clinic */
@@ -4559,7 +4948,7 @@ function Nav({
     onClick: () => go("location")
   }, "Locations"), /*#__PURE__*/React.createElement("a", {
     className: "nav-link hide-sm",
-    onClick: () => go("landing")
+    onClick: () => go("treatments")
   }, "Treatments"), user ? user.staff ? /*#__PURE__*/React.createElement("button", {
     className: "chip",
     onClick: () => go("admin"),
@@ -4998,7 +5387,9 @@ function SiteFooter({
   }, "Book an appointment")), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
     onClick: () => go && go("login")
   }, "Patient portal")), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
-    onClick: () => go && go("admin")
+    onClick: () => go && go("login", {
+      role: "staff"
+    })
   }, "Staff login")), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
     onClick: () => setLegal("terms")
   }, "Terms & Conditions")), /*#__PURE__*/React.createElement("li", null, /*#__PURE__*/React.createElement("a", {
@@ -5044,7 +5435,9 @@ function SiteFooter({
   }, "Terms & Conditions"), /*#__PURE__*/React.createElement("a", {
     onClick: () => setLegal("privacy")
   }, "Privacy Policy"), /*#__PURE__*/React.createElement("a", {
-    onClick: () => go && go("admin")
+    onClick: () => go && go("login", {
+      role: "staff"
+    })
   }, "Staff login")))), /*#__PURE__*/React.createElement(LegalModal, {
     which: legal,
     onClose: () => setLegal(null)

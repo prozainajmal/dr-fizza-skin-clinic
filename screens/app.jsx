@@ -14,8 +14,10 @@ function App() {
   const [booking, setBooking] = React.useState({ city: null, date: null, time: null });
   const [user, setUser] = React.useState(null);
   const [toast, setToast] = React.useState("");
+  const [loginRole, setLoginRole] = React.useState("patient");
 
-  const go = (s) => {
+  const go = (s, opts) => {
+    if (opts && opts.role) setLoginRole(opts.role);
     setScreen(s);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -38,7 +40,7 @@ function App() {
 
   const props = { go, cities: CITIES, booking, setBooking, user, setUser };
   const notify = (m) => setToast(m);
-  const showFooter = ["landing", "location", "dashboard", "profile"].includes(screen);
+  const showFooter = ["landing", "location", "dashboard", "profile", "treatments"].includes(screen);
   const showNav = !["auth", "confirmation", "admin", "login"].includes(screen);
   const showAssistant = !["admin", "login"].includes(screen);
   const logout = () => { setUser(null); setToast("You've been logged out"); go("landing"); };
@@ -46,6 +48,7 @@ function App() {
   let body;
   switch (screen) {
     case "landing": body = <Landing {...props} />; break;
+    case "treatments": body = <Treatments {...props} />; break;
     case "location": body = <LocationSelector {...props} />; break;
     case "calendar": body = <Calendar {...props} />; break;
     case "auth": body = <AuthCheckpoint {...props} />; break;
@@ -54,7 +57,7 @@ function App() {
     case "confirmation": body = <Confirmation {...props} />; break;
     case "dashboard": body = <Dashboard {...props} />; break;
     case "profile": body = <Profile {...props} notify={notify} />; break;
-    case "login": body = <LoginPage go={go} setUser={setUser} notify={notify} />; break;
+    case "login": body = <LoginPage key={loginRole} go={go} setUser={setUser} notify={notify} initialRole={loginRole} />; break;
     case "admin": body = <AdminPanel go={go} notify={notify} onLogout={logout} />; break;
     default: body = <Landing {...props} />;
   }

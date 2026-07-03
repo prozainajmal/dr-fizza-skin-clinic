@@ -90,7 +90,7 @@ function Nav({ go, user, onLogin, onLogout, showLogin = true }) {
         <Logo onClick={() => go("landing")} />
         <div className="nav-links">
           <a className="nav-link hide-sm" onClick={() => go("location")}>Locations</a>
-          <a className="nav-link hide-sm" onClick={() => go("landing")}>Treatments</a>
+          <a className="nav-link hide-sm" onClick={() => go("treatments")}>Treatments</a>
           {user ? (
             user.staff ? (
               <button className="chip" onClick={() => go("admin")} style={{ cursor: "pointer" }}>
@@ -349,7 +349,7 @@ function SiteFooter({ go }) {
             <ul className="footer-list">
               <li><a onClick={() => go && go("location")}>Book an appointment</a></li>
               <li><a onClick={() => go && go("login")}>Patient portal</a></li>
-              <li><a onClick={() => go && go("admin")}>Staff login</a></li>
+              <li><a onClick={() => go && go("login", { role: "staff" })}>Staff login</a></li>
               <li><a onClick={() => setLegal("terms")}>Terms &amp; Conditions</a></li>
               <li><a onClick={() => setLegal("privacy")}>Privacy Policy</a></li>
             </ul>
@@ -372,7 +372,7 @@ function SiteFooter({ go }) {
           <div className="row" style={{ gap: 18, flexWrap: "wrap" }}>
             <a onClick={() => setLegal("terms")}>Terms &amp; Conditions</a>
             <a onClick={() => setLegal("privacy")}>Privacy Policy</a>
-            <a onClick={() => go && go("admin")}>Staff login</a>
+            <a onClick={() => go && go("login", { role: "staff" })}>Staff login</a>
           </div>
         </div>
       </div>

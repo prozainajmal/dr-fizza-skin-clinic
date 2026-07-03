@@ -4,8 +4,8 @@
    Patient  -> dashboard
    Staff     -> admin panel
    ============================================================ */
-function LoginPage({ go, setUser, notify }) {
-  const [role, setRole] = React.useState("patient"); // 'patient' | 'staff'
+function LoginPage({ go, setUser, notify, initialRole }) {
+  const [role, setRole] = React.useState(initialRole === "staff" ? "staff" : "patient"); // 'patient' | 'staff'
   const [mode, setMode] = React.useState("login");    // 'login' | 'register' (patient only)
   const [email, setEmail] = React.useState("");
   const [pw, setPw] = React.useState("");

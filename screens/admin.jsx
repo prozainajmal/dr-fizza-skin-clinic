@@ -24,6 +24,85 @@ function StatusBadge({ s }) {
   return <span className="badge" style={STATUS_STYLE[s] || STATUS_STYLE.Open}>{s}</span>;
 }
 
+/* ---------------- Message modal ---------------- */
+function MessageModal({ patient, onClose, notify }) {
+  const [text, setText] = React.useState("");
+  if (!patient) return null;
+  const send = () => {
+    notify("Message sent to " + patient.name);
+    setText("");
+    onClose();
+  };
+  return (
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, zIndex: 210, background: "rgba(42,28,28,.5)", display: "grid", placeItems: "center", padding: 20, animation: "fade .2s ease both" }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "var(--white)", borderRadius: "var(--r-lg)", boxShadow: "0 30px 70px rgba(42,28,28,.35)", width: "100%", maxWidth: 460, animation: "pop .25s var(--ease) both" }}>
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start", padding: "22px 24px 16px", borderBottom: "1px solid var(--line)" }}>
+          <div className="row" style={{ gap: 12, alignItems: "center" }}>
+            <span style={{ width: 40, height: 40, borderRadius: "50%", background: "var(--rose-deep)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 700 }}>{patient.name[0]}</span>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>{patient.name}</div>
+              <div className="faint" style={{ fontSize: 12.5 }}>New message</div>
+            </div>
+          </div>
+          <button className="icon-btn" aria-label="Close" onClick={onClose}><Icon name="x" size={16} /></button>
+        </div>
+        <div style={{ padding: "18px 24px 24px" }}>
+          <textarea className="textarea" style={{ minHeight: 110 }} placeholder={`Write a message to ${patient.name}…`} value={text} onChange={(e) => setText(e.target.value)} autoFocus />
+          <div className="row" style={{ justifyContent: "flex-end", gap: 10, marginTop: 14 }}>
+            <button className="btn btn-quiet" onClick={onClose}>Cancel</button>
+            <button className="btn btn-primary" disabled={!text.trim()} onClick={send}><Icon name="send" size={15} /> Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ---------------- Notifications dropdown ---------------- */
+const SAMPLE_NOTIFS = [
+  { ic: "calendar-plus", t: "New booking", d: "Zoya Ahmed booked a laser follow-up for 10:30 AM.", time: "12m ago" },
+  { ic: "file-badge", t: "Report uploaded", d: "Ayesha Khan uploaded lab-report-march.pdf for review.", time: "1h ago" },
+  { ic: "calendar-x", t: "Reschedule request", d: "Emaan Raza asked to move her video consult.", time: "3h ago" },
+];
+function NotifBell() {
+  const [open, setOpen] = React.useState(false);
+  const ref = React.useRef(null);
+  React.useEffect(() => {
+    if (!open) return;
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button className="icon-btn" aria-label="Notifications" onClick={() => setOpen((o) => !o)} style={{ position: "relative" }}>
+        <Icon name="bell" size={17} />
+        <span style={{ position: "absolute", top: 5, right: 6, width: 7, height: 7, borderRadius: "50%", background: "var(--rose-deep)" }} />
+      </button>
+      {open && (
+        <div className="nav-menu" style={{ width: 320, right: 0 }}>
+          <div className="nav-menu-head">
+            <div style={{ fontWeight: 700, fontSize: 14 }}>Notifications</div>
+            <div className="faint" style={{ fontSize: 12.5 }}>{SAMPLE_NOTIFS.length} recent updates</div>
+          </div>
+          {SAMPLE_NOTIFS.map((n, i) => (
+            <div key={i} className="row" style={{ gap: 11, alignItems: "flex-start", padding: "10px 12px", borderRadius: 9 }}>
+              <span style={{ width: 32, height: 32, borderRadius: 9, background: "var(--rose-tint)", color: "var(--rose-deep)", display: "grid", placeItems: "center", flex: "none" }}>
+                <Icon name={n.ic} size={15} />
+              </span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 13.5 }}>{n.t}</div>
+                <div className="faint" style={{ fontSize: 12.5, lineHeight: 1.4, margin: "2px 0" }}>{n.d}</div>
+                <div className="faint" style={{ fontSize: 11 }}>{n.time}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ---------------- Overview ---------------- */
 function AdminOverview({ appts, setSection, verifyCount }) {
   const stats = [
@@ -248,6 +327,7 @@ function AdminPatients({ notify }) {
   const [sel, setSel] = React.useState(patients[0]);
   const [verified, setVerified] = React.useState({});
   const [query, setQuery] = React.useState("");
+  const [messaging, setMessaging] = React.useState(null);
   const isV = (p) => verified[p.id] ?? p.verified;
   const shown = patients.filter((p) => p.name.toLowerCase().includes(query.toLowerCase()));
 
@@ -289,7 +369,7 @@ function AdminPatients({ notify }) {
               </div>
               <div className="faint" style={{ fontSize: 13.5, marginTop: 2 }}>{sel.visits} lifetime visit{sel.visits > 1 ? "s" : ""} · Patient ID #{1000 + sel.id}</div>
             </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => notify("Message sent to " + sel.name)}><Icon name="message-circle" size={15} /> Message</button>
+            <button className="btn btn-ghost btn-sm" onClick={() => setMessaging(sel)}><Icon name="message-circle" size={15} /> Message</button>
           </div>
         </div>
 
@@ -320,6 +400,7 @@ function AdminPatients({ notify }) {
           </div>
         </div>
       </div>
+      <MessageModal patient={messaging} onClose={() => setMessaging(null)} notify={notify} />
     </div>
   );
 }
@@ -359,7 +440,9 @@ function AdminPanel({ go, notify, onLogout }) {
           </button>
         ))}
         <div className="aside-foot">
-          <span className="av">F</span>
+          <span className="av" style={{ padding: 0, overflow: "hidden" }}>
+            <img src="assets/dr-fizza.jpg" alt="Dr. Fizza Ahmed" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", borderRadius: "50%" }} onError={(e) => { e.currentTarget.style.display = "none"; e.currentTarget.parentElement.textContent = "F"; }} />
+          </span>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 13.5, fontWeight: 600, color: "#fff" }}>Dr. Fizza Ahmed</div>
             <div style={{ fontSize: 11.5, color: "rgba(232,221,216,.5)" }}>Administrator</div>
@@ -376,7 +459,7 @@ function AdminPanel({ go, notify, onLogout }) {
             <p className="faint" style={{ fontSize: 14, margin: "5px 0 0" }}>{titles[section][1]}</p>
           </div>
           <div className="row" style={{ gap: 10, alignItems: "center" }}>
-            <button className="icon-btn" aria-label="Notifications" onClick={() => notify("No new notifications")}><Icon name="bell" size={17} /></button>
+            <NotifBell />
           </div>
         </div>
 
