@@ -41,9 +41,6 @@ function Dashboard({ go, booking, user }) {
                   {booking.ref && <span className="chip"><Icon name="hash" size={13} /> {booking.ref}</span>}
                 </div>
               </div>
-              <div style={{ width: 200, alignSelf: "stretch" }} className="hide-sm">
-                <Img src="assets/dr-fizza.jpg" style={{ height: "100%", objectPosition: "center top" }} />
-              </div>
             </div>
           </div>
 

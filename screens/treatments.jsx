@@ -17,6 +17,11 @@ function Treatments({ go }) {
       d: "Targeted treatment for melasma, sun damage and uneven tone using lasers, peels and topical protocols.",
     },
     {
+      icon: "droplet",
+      t: "Glass Skin Facial",
+      d: "Layered hydration facials, micro-needling and skin-boosters that build the smooth, luminous finish glass skin is known for.",
+    },
+    {
       icon: "syringe",
       t: "Anti-Aging & Fillers",
       d: "Botox, dermal fillers and skin-boosters administered by board-certified physicians for natural results.",
@@ -25,11 +30,6 @@ function Treatments({ go }) {
       icon: "droplets",
       t: "Chemical Peels",
       d: "Layered peel protocols — from light refresh to deeper resurfacing — matched to your skin's tolerance.",
-    },
-    {
-      icon: "gem",
-      t: "Bridal & Pre-Event",
-      d: "Multi-session prep plans that bring skin to its best for a wedding or major event, planned months ahead.",
     },
   ];
 
